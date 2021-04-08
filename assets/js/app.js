@@ -64,12 +64,29 @@ d3.csv("/assets/data/data.csv").then(function(data) {
         .data(data)
         .enter()
         .append("circle")
+        .attr("class", "stateCircle")
         .attr("cx", d => xLinearScale(d.poverty))
         .attr("cy", d => yLinearScale(d.healthcare))
-        .attr("r", "15")
-        .attr("fill", "#1BCCCC")
-        .attr("opacity", "0.7");
+        .attr("r", "15");
 
+    // set up tool tip
+    var toolTip = d3.tip()
+        .attr("class", "d3-tip")
+        .offset([80, -60])
+        .html(function(d) {
+            return (`${d.state}<br>Poverty: ${d.poverty}%<br>Lack Healthcare: ${d.healthcare}`); 
+        });
+    // event listeners for tool tip
+    // on click
+    circlesGroup.on("click", function(data) {
+        toolTip.show(data, this);
+    }) // on mouseover
+        .on("mouseover", function(data) {
+            toolTip.show(data, this);
+        }) // on mouseout
+        .on("mouseout", function(data, index) {
+            toolTip.hide(data);
+        });
 
 
 });
