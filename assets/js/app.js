@@ -95,8 +95,14 @@ d3.csv("/assets/data/data.csv").then(function(data) {
       .attr("dy", "1em")
       .attr("class", "aText")
       .attr("class", "active")
-      .text("Lack Healthcare (%)")
+      .text("Lack Healthcare (%)");
 
+    // create xaxis labels
+    chartGroup.append("text")
+        .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
+        .attr("class", "aText")
+        .attr("class", "active")
+        .text("In Poverty (%)");
 
     // set up tool tip
     var toolTip = d3.tip()
@@ -116,9 +122,7 @@ d3.csv("/assets/data/data.csv").then(function(data) {
         toolTip.hide(data);
       });
 
-    
-
-
-
-
-});
+// to catch errors and display in console
+}).catch(function(error) {
+    console.log(error);
+ });
