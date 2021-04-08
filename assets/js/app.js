@@ -72,21 +72,20 @@ d3.csv("/assets/data/data.csv").then(function(data) {
     // set up tool tip
     var toolTip = d3.tip()
         .attr("class", "d3-tip")
-        .offset([80, -60])
+        .offset([45, -80])
         .html(function(d) {
             return (`${d.state}<br>Poverty: ${d.poverty}%<br>Lack Healthcare: ${d.healthcare}`); 
         });
-    // event listeners for tool tip
-    // on click
+    // event listeners for tool tip 
+    // show on click or mousover, hide on mouseout
+    chartGroup.call(toolTip);
     circlesGroup.on("click", function(data) {
+      toolTip.show(data, this);
+    }).on("mouseover", function(data) {
         toolTip.show(data, this);
-    }) // on mouseover
-        .on("mouseover", function(data) {
-            toolTip.show(data, this);
-        }) // on mouseout
-        .on("mouseout", function(data, index) {
-            toolTip.hide(data);
-        });
+      }).on("mouseout", function(data, index) {
+        toolTip.hide(data);
+      });
 
 
 });
