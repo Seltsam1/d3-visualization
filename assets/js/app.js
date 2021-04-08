@@ -69,6 +69,35 @@ d3.csv("/assets/data/data.csv").then(function(data) {
         .attr("cy", d => yLinearScale(d.healthcare))
         .attr("r", "15");
 
+     // add initials of state to each circle (data.abbr)
+     var textGroup = chartGroup.append("g")
+     
+     textGroup.selectAll("text")
+      .data(data)
+      .enter()
+      .append("text")
+      .text(function (data) {
+          return data.abbr;
+      })
+      .attr("class", "stateText")
+      .attr("dx", function(data) {
+          return xLinearScale(data.poverty);
+      })
+      .attr("dy", function(data) {
+          return yLinearScale(data.healthcare) +15 / 2.5;
+      })
+
+    // create yaxis labels
+    chartGroup.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left + 40)
+      .attr("x", 0 - (height / 2))
+      .attr("dy", "1em")
+      .attr("class", "aText")
+      .attr("class", "active")
+      .text("Lack Healthcare (%)")
+
+
     // set up tool tip
     var toolTip = d3.tip()
         .attr("class", "d3-tip")
@@ -87,23 +116,9 @@ d3.csv("/assets/data/data.csv").then(function(data) {
         toolTip.hide(data);
       });
 
-     // add initials of state to each circle (data.abbr)
-     var textGroup = chartGroup.append("g")
-     
-     textGroup.selectAll("text")
-      .data(data)
-      .enter()
-      .append("text")
-      .text(function (data) {
-          return data.abbr;
-      })
-      .attr("class", "stateText")
-      .attr("dx", function(data) {
-          return xLinearScale(data.poverty)-10;
-      })
-      .attr("dy", function(data) {
-          return yLinearScale(data.healthcare)+15/2.5;
-      })
-      .call(toolTip)
+    
+
+
+
 
 });
