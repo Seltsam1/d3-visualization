@@ -87,5 +87,23 @@ d3.csv("/assets/data/data.csv").then(function(data) {
         toolTip.hide(data);
       });
 
+     // add initials of state to each circle (data.abbr)
+     var textGroup = chartGroup.append("g")
+     
+     textGroup.selectAll("text")
+      .data(data)
+      .enter()
+      .append("text")
+      .text(function (data) {
+          return data.abbr;
+      })
+      .attr("class", "stateText")
+      .attr("dx", function(data) {
+          return xLinearScale(data.poverty)-10;
+      })
+      .attr("dy", function(data) {
+          return yLinearScale(data.healthcare)+15/2.5;
+      })
+      .call(toolTip)
 
 });
