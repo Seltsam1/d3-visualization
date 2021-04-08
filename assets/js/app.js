@@ -7,12 +7,12 @@ var margin = {
     top: 20,
     right: 40,
     bottom: 60,
-    let: 100
+    left: 100
 };
 
 // define height width based on margins
 var width = svgWidth - margin.left - margin.right;
-var height = svgHeight - margin.top - margin.left;
+var height = svgHeight - margin.top - margin.bottom;
 
 // use d3 to select id scatter
 var svg = d3.select("#scatter")
@@ -32,13 +32,31 @@ var chartGroup = svg.append("g")
 d3.csv("/assets/data/data.csv").then(function(data) {
 
     console.log(data)
-//     // Convert data into numeric
-//     data.forEach(function(data) {
-//         data.poverty = +data.poverty;
-//         data.healthcase = +data.healthcare;
-//     });
-//     // create scale functions
-//     var xLinearScare = d3.scaleLinear()
-//         .domain([d3.min(data, d => d.poverty) * 0.9], d3.max(data, d))
+    // Convert data into numeric for poverty and healthcare
+    data.forEach(function(data) {
+        data.poverty = +data.poverty;
+        data.healthcase = +data.healthcare;
+    });
+    // create scale functions
+    var xLinearScale = d3.scaleLinear()
+        .domain([d3.min(data, d => d.poverty)*0.9, d3.max(data, d => d.poverty)])
+        .range([0, width]);
+
+    var yLinearScale = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.healthcare)])
+        .range([height, 0]);
+
+    // create functions for xaxis and yaxis
+    var bottomAxis = d3.axisBottom(xLinearScale);
+    var leftAxis = d3.axisLeft(yLinearScale);
+
+    // append xaxis
+    chartGroup.append("g")
+        .attr("transform", `translate(0, ${height})`)
+        .call(bottomAxis);
+        
+    // append yaxis
+    chartGroup.append("g")
+        .call(leftAxis);
 
 })
