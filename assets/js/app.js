@@ -35,11 +35,11 @@ d3.csv("/assets/data/data.csv").then(function(data) {
     // Convert data into numeric for poverty and healthcare
     data.forEach(function(data) {
         data.poverty = +data.poverty;
-        data.healthcase = +data.healthcare;
+        data.healthcare = +data.healthcare;
     });
     // create scale functions
     var xLinearScale = d3.scaleLinear()
-        .domain([d3.min(data, d => d.poverty)*0.9, d3.max(data, d => d.poverty)])
+        .domain([d3.min(data, d => d.poverty)*0.9, d3.max(data, d => d.poverty)*1.1])
         .range([0, width]);
 
     var yLinearScale = d3.scaleLinear()
@@ -54,9 +54,22 @@ d3.csv("/assets/data/data.csv").then(function(data) {
     chartGroup.append("g")
         .attr("transform", `translate(0, ${height})`)
         .call(bottomAxis);
-        
+
     // append yaxis
     chartGroup.append("g")
         .call(leftAxis);
 
-})
+    // append circles
+    var circlesGroup = chartGroup.selectAll("circle")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("cx", d => xLinearScale(d.poverty))
+        .attr("cy", d => yLinearScale(d.healthcare))
+        .attr("r", "15")
+        .attr("fill", "#1BCCCC")
+        .attr("opacity", "0.7");
+
+
+
+});
