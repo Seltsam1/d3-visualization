@@ -23,7 +23,93 @@ var svg = d3.select("#scatter")
 // append graphic for x-axis, with trasform to move to bottom of chart
 var chartGroup = svg.append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+// initial parameters to switch axis
+var chosenXAxis = "poverty"
+
+// function to update values based on xaxis
+function xScale(data, chosenXAxis) {
+    // create scales
+    var xLinearScale = d3.scaleLinear()
+      .domain([d3.min(data, d => d[chosenXAxis]) * 0.8,
+        d3.max(data, d => d[chosenXAxis]) * 1.2
+      ])
+      .range([0, width]);
+    return xLinearScale;
+    }
+
+// function to update axis itself based on choice
+function renderAxes(newXScale, xAxis) {
+    var bottomAxis = d3.axisBottom(newXScale);
   
+    xAxis.transition()
+      .duration(1000)
+      .call(bottomAxis);
+  
+    return xAxis;
+    }
+// function to update circles
+function renderCircles(circlesGroup, newXScale, chosenXAxis) {
+
+  circlesGroup.transition()
+    .duration(1000)
+    .attr("cx", d => newXScale(d[chosenXAxis]));
+
+  return circlesGroup;
+}
+
+// function used for updating circles group with a transition to
+// new circles
+function renderCircles(circlesGroup, newXScale, chosenXAxis) {
+
+    circlesGroup.transition()
+      .duration(1000)
+      .attr("cx", d => newXScale(d[chosenXAxis]));
+  
+    return circlesGroup;
+  }
+  
+  // function used for updating circles group with new tooltip
+  function updateToolTip(chosenXAxis, circlesGroup) {
+  
+    var label;
+  
+    if (chosenXAxis === "poverty") {
+      label = "Poverty: ";
+    }
+    else {
+      label = "Household Income: $";
+    }
+  
+    var toolTip = d3.tip()
+      .attr("class", "d3-tip")
+      .offset([80, -60])
+      .html(function(d) {
+        return (`${d.state}<br>${label} ${d[chosenXAxis]}`);
+      });
+  
+    circlesGroup.call(toolTip);
+  
+    circlesGroup.on("mouseover", function(data) {
+      toolTip.show(data, this);
+    })
+      // onmouseout event
+      .on("mouseout", function(data, index) {
+        toolTip.hide(data);
+      });
+  
+    return circlesGroup;
+  }
+
+  function updateAbbr(chosenXAxis, newXscale, abbrGroup) {
+
+    abbrGroup.transition()
+    .duration(1000)
+  }
+
+
+
+
 // NOTE - use terminal to open server to view
 // cd to folder structure containing files
 // in terminal: python3 -m http.server 3001
@@ -69,23 +155,24 @@ d3.csv("/assets/data/data.csv").then(function(data) {
         .attr("cy", d => yLinearScale(d.healthcare))
         .attr("r", "15");
 
-     // add initials of state to each circle (data.abbr)
-     var textGroup = chartGroup.append("g")
-     
-     textGroup.selectAll("text")
-      .data(data)
-      .enter()
-      .append("text")
-      .text(function (data) {
-          return data.abbr;
-      })
-      .attr("class", "stateText")
-      .attr("dx", function(data) {
-          return xLinearScale(data.poverty);
-      })
-      .attr("dy", function(data) {
-          return yLinearScale(data.healthcare) +15 / 2.5;
-      })
+
+    // add initials of state to each circle (data.abbr)
+    var textGroup = chartGroup.append("g")
+    
+    textGroup.selectAll("text")
+    .data(data)
+    .enter()
+    .append("text")
+    .text(function (data) {
+        return data.abbr;
+    })
+    .attr("class", "stateText")
+    .attr("dx", function(data) {
+        return xLinearScale(data.poverty);
+    })
+    .attr("dy", function(data) {
+        return yLinearScale(data.healthcare) +15 / 2.5;
+    })
 
     // create yaxis labels
     chartGroup.append("text")
@@ -109,7 +196,7 @@ d3.csv("/assets/data/data.csv").then(function(data) {
         .attr("class", "d3-tip")
         .offset([45, -80])
         .html(function(d) {
-            return (`${d.state}<br>Poverty: ${d.poverty}%<br>Lack Healthcare: ${d.healthcare}`); 
+            return (`${d.state}<br>Poverty: ${d.poverty}%<br>Lack Healthcare: ${d.healthcare}%`); 
         });
     // event listeners for tool tip 
     // show on click or mousover, hide on mouseout
